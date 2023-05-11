@@ -12,14 +12,14 @@ chai.use(chaiHttp);
 const { expect } = chai;
 const teams = [
   {
-    id: 1,
+    id: 5,
     teamName: 'Cruzeiro'
   },
 ]
 
 describe('Testa endpoint /teams', () => {
 
-  it('testa se retorna arraay de times, com status duzentos', async () => {
+  it('testa getAllTeams', async () => {
     sinon.stub(TeamService, 'getAllTeams').resolves(teams as Team[])
     const response = await chai.request(app).get('/teams')
 
@@ -27,4 +27,11 @@ describe('Testa endpoint /teams', () => {
     expect(response.body).to.be.deep.equal(teams)
   } )
 
+  it('testa getTeamByID', async () => {
+    sinon.stub(TeamService, 'getTeamById').resolves(teams[0] as Team)
+    const response = await chai.request(app).get('/teams/5')
+
+    expect(response.status).to.be.equal(200)
+    expect(response.body).to.be.deep.equal(teams[0])
+  } )
 });
