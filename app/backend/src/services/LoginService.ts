@@ -15,4 +15,12 @@ export default class LoginService {
 
     return token;
   }
+
+  public static async getRole(email: string): Promise<string | { message: string }> {
+    const user = await UserModel.findOne({ where: { email } });
+    if (user) {
+      return user.role;
+    }
+    return { message: 'Role not found, User not exist' };
+  }
 }

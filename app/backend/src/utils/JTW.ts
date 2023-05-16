@@ -13,6 +13,11 @@ class JTW {
 
     return token;
   }
+
+  static decodedToken(token: string): Login {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'SECRET');
+    return decoded as Login;
+  }
 }
 
 export default JTW;
