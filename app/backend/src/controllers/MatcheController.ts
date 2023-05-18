@@ -31,12 +31,23 @@ export default class MatcheController {
 
   public static async createNewMatche(req: Request, res: Response) {
     const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = req.body;
+
+    if (homeTeamId === awayTeamId) {
+      return res.status(422).json({
+        message: 'It is not possible to create a match with two equal teams',
+      });
+    }
+
     const matche = await MatcheService.createNewMatche(
       homeTeamId,
       awayTeamId,
       homeTeamGoals,
       awayTeamGoals,
     );
+
+    if (typeof matche === 'string') {
+      return res.status(404).json({ message: matche });
+    }
     return res.status(201).json(matche);
   }
 }

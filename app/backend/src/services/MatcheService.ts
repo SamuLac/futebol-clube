@@ -1,5 +1,6 @@
 import Team from '../database/models/TeamModel';
 import Matche from '../database/models/MatchesModel';
+import TeamService from './TeamService';
 
 export default class MatcheService {
   public static async getAllMatches(): Promise<Matche[]> {
@@ -43,12 +44,22 @@ export default class MatcheService {
     awayTeamId: number,
     homeTeamGoals: number,
     awayTeamGoals: number,
-  ): Promise<Matche> {
-    const matche = { homeTeamId,
+  ): Promise<Matche | string> {
+    const matche = {
+      homeTeamId,
       awayTeamId,
       homeTeamGoals,
-      awayTeamGoals };
+      awayTeamGoals,
+    };
+
+    const homeTeam = await TeamService.getTeamById(matche.homeTeamId);
+    const awayTeam = await TeamService.getTeamById(matche.awayTeamId);
+    if (typeof homeTeam === 'string' || typeof awayTeam === 'string') {
+      return 'There is no team with such id!';
+    }
+
     const newMatche = await Matche.create({ ...matche, inProgress: true });
+
     return newMatche;
   }
 }
