@@ -17,6 +17,4 @@ export default class MatcheController {
     const finished = await MatcheService.finishMatche(Number(id));
     return res.status(200).json(finished);
   }
-
-
 }
