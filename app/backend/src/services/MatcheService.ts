@@ -62,4 +62,17 @@ export default class MatcheService {
 
     return newMatche;
   }
+
+  public static async getMatcheById(id: number): Promise<Matche[]> {
+    const matches = await Matche.findAll({
+      where: { homeTeamId: id, inProgress: false },
+      include: [{
+        model: Team,
+        as: 'homeTeam',
+        attributes: { exclude: ['id'] } }, {
+        model: Team,
+        as: 'awayTeam',
+        attributes: { exclude: ['id'] } }] });
+    return matches;
+  }
 }
