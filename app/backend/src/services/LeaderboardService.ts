@@ -1,11 +1,12 @@
 import Matche from '../database/models/MatchesModel';
 import MatcheService from './MatcheService';
 import TeamService from './TeamService';
+import Board from '../interfaces/Board';
 
 export default class LeaderboardService {
   public static async getBoard() {
     const teams = await TeamService.getAllTeams();
-    return Promise.all(teams.map(async (team) => {
+    const board = Promise.all(teams.map(async (team) => {
       const matches = await MatcheService.getMatcheById(team.id);
       return {
         name: team.teamName,
@@ -16,8 +17,12 @@ export default class LeaderboardService {
         totalLosses: this.getTotalLosses(matches),
         goalsFavor: this.getGoalsFavor(matches),
         goalsOwn: this.getGoalsOwn(matches),
+        goalsBalance: this.getGoalsBalance(matches),
+        efficiency: this.getEfficiency(matches),
       };
     }));
+    const boardSorted = this.sortTeams(await board);
+    return boardSorted;
   }
 
   public static getTotalPoints(matches: Matche[]) {
@@ -47,12 +52,41 @@ export default class LeaderboardService {
   }
 
   public static getGoalsFavor(matches: Matche[]) {
-    const result = matches.reduce((acc, current) => acc + current.homeTeamGoals, 0);
-    return result;
+    const goalsFavor = matches.reduce((acc, current) => acc + current.homeTeamGoals, 0);
+    return goalsFavor;
   }
 
   public static getGoalsOwn(matches: Matche[]) {
-    const result = matches.reduce((acc, current) => (acc + current.awayTeamGoals), 0);
-    return result;
+    const goalsOwn = matches.reduce((acc, current) => (acc + current.awayTeamGoals), 0);
+    return goalsOwn;
+  }
+
+  public static getGoalsBalance(matches: Matche[]) {
+    const goalsOwn = this.getGoalsOwn(matches);
+    const goalsFavor = this.getGoalsFavor(matches);
+    const goalsBalance = goalsFavor - goalsOwn;
+    return goalsBalance;
+  }
+
+  public static getEfficiency(matches: Matche[]) {
+    const totalPoints = this.getTotalPoints(matches);
+    const totalGames = matches.length;
+    const efficiency = ((totalPoints / (totalGames * 3)) * 100).toFixed(2);
+    return efficiency;
+  }
+
+  private static sortTeams(board: Board[]) {
+    board.sort((b, a) => {
+      if (a.totalPoints === b.totalPoints) {
+        if (a.totalVictories === b.totalVictories) {
+          if (a.goalsBalance === b.goalsBalance) {
+            return a.goalsFavor - b.goalsFavor;
+          }
+          return a.goalsBalance - b.goalsBalance;
+        }
+        return a.totalVictories - b.totalVictories;
+      }
+      return a.totalPoints - b.totalPoints;
+    }); return board;
   }
 }
