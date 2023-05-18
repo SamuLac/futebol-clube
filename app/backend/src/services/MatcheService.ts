@@ -25,4 +25,9 @@ export default class MatcheService {
         attributes: { exclude: ['id'] } }] });
     return matches;
   }
+
+  public static async finishMatche(id: number): Promise<{ message: string }> {
+    await Matche.update({ inProgress: false }, { where: { id } });
+    return { message: 'Finished' };
+  }
 }
