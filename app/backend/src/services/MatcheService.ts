@@ -30,4 +30,12 @@ export default class MatcheService {
     await Matche.update({ inProgress: false }, { where: { id } });
     return { message: 'Finished' };
   }
+
+  public static async updateMatche(id: number, goals: {
+    homeTeamGoals: number, awayTeamGoals: number }): Promise<{ message: string, goals: string}> {
+
+    await Matche.update(goals, { where: { id } });
+
+    return { message: 'updated', goals: `${goals}` };
+  }
 }
