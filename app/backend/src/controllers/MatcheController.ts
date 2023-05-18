@@ -28,4 +28,15 @@ export default class MatcheController {
     );
     return res.status(200).json(message);
   }
+
+  public static async createNewMatche(req: Request, res: Response) {
+    const { homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals } = req.body;
+    const matche = await MatcheService.createNewMatche(
+      homeTeamId,
+      awayTeamId,
+      homeTeamGoals,
+      awayTeamGoals,
+    );
+    return res.status(201).json(matche);
+  }
 }

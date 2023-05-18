@@ -18,4 +18,10 @@ matcheRouter.patch(
 
 matcheRouter.get('/', (req, res) => MatcheController.getAllMatches(req, res));
 
+matcheRouter.post(
+  '/',
+  (req, res, next) => authentication(req, res, next),
+  (req, res) => MatcheController.createNewMatche(req, res),
+);
+
 export default matcheRouter;

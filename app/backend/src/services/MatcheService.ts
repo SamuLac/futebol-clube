@@ -37,4 +37,18 @@ export default class MatcheService {
 
     return { message: 'updated', goals: `${goals}` };
   }
+
+  public static async createNewMatche(
+    homeTeamId: number,
+    awayTeamId: number,
+    homeTeamGoals: number,
+    awayTeamGoals: number,
+  ): Promise<Matche> {
+    const matche = { homeTeamId,
+      awayTeamId,
+      homeTeamGoals,
+      awayTeamGoals };
+    const newMatche = await Matche.create({ ...matche, inProgress: true });
+    return newMatche;
+  }
 }
